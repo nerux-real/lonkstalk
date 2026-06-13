@@ -34,7 +34,7 @@ jobs:
 
     - name: Build
       run: |
-        cl /EHsc /Fe:game.exe /I SDL2-2.30.0/include /I SDL2_mixer-2.8.0/include /I SDL2_ttf-2.22.0/include Beatmap.cpp Game.cpp Window.cpp main.cpp SDL2-2.30.0/lib/x64/SDL2.lib SDL2-2.30.0/lib/x64/SDL2main.lib SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib SDL2_ttf-2.22.0/lib/x64/SDL2_ttf.lib /link /SUBSYSTEM:CONSOLE
+        cl /EHsc /Fe:game.exe /I SDL2-2.30.0/include /I SDL2_mixer-2.8.0/include /I SDL2_ttf-2.22.0/include Beatmap.cpp Game.cpp Window.cpp main.cpp SDL2-2.30.0/lib/x64/SDL2.lib SDL2-2.30.0/lib/x64/SDL2main.lib SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib SDL2_ttf-2.22.0/lib/x64/SDL2_ttf.lib shell32.lib /link /SUBSYSTEM:CONSOLE
 
     - name: Upload EXE
       uses: actions/upload-artifact@v4
