@@ -1,5 +1,0 @@
-name: First ever beatmap made on this game
-author: nerux
-song: music.mp3
-song_original_name: Made of Fire (Extended mix) · Niko · Bratt Sinclaire
-bpm: 152

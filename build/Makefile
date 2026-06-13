@@ -129,6 +129,19 @@ Lonkstalk/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/build
 .PHONY : Lonkstalk/fast
 
+#=============================================================================
+# Target rules for targets named LKPacker
+
+# Build rule for target.
+LKPacker: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 LKPacker
+.PHONY : LKPacker
+
+# fast build rule for target.
+LKPacker/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/build
+.PHONY : LKPacker/fast
+
 Beatmap.o: Beatmap.cpp.o
 .PHONY : Beatmap.o
 
@@ -152,6 +165,30 @@ Beatmap.s: Beatmap.cpp.s
 Beatmap.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Beatmap.cpp.s
 .PHONY : Beatmap.cpp.s
+
+DebugOverlay.o: DebugOverlay.cpp.o
+.PHONY : DebugOverlay.o
+
+# target to build an object file
+DebugOverlay.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.o
+.PHONY : DebugOverlay.cpp.o
+
+DebugOverlay.i: DebugOverlay.cpp.i
+.PHONY : DebugOverlay.i
+
+# target to preprocess a source file
+DebugOverlay.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.i
+.PHONY : DebugOverlay.cpp.i
+
+DebugOverlay.s: DebugOverlay.cpp.s
+.PHONY : DebugOverlay.s
+
+# target to generate assembly for a file
+DebugOverlay.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.s
+.PHONY : DebugOverlay.cpp.s
 
 Game.o: Game.cpp.o
 .PHONY : Game.o
@@ -177,6 +214,54 @@ Game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Game.cpp.s
 .PHONY : Game.cpp.s
 
+ParticleSystem.o: ParticleSystem.cpp.o
+.PHONY : ParticleSystem.o
+
+# target to build an object file
+ParticleSystem.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/ParticleSystem.cpp.o
+.PHONY : ParticleSystem.cpp.o
+
+ParticleSystem.i: ParticleSystem.cpp.i
+.PHONY : ParticleSystem.i
+
+# target to preprocess a source file
+ParticleSystem.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/ParticleSystem.cpp.i
+.PHONY : ParticleSystem.cpp.i
+
+ParticleSystem.s: ParticleSystem.cpp.s
+.PHONY : ParticleSystem.s
+
+# target to generate assembly for a file
+ParticleSystem.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/ParticleSystem.cpp.s
+.PHONY : ParticleSystem.cpp.s
+
+Settings.o: Settings.cpp.o
+.PHONY : Settings.o
+
+# target to build an object file
+Settings.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Settings.cpp.o
+.PHONY : Settings.cpp.o
+
+Settings.i: Settings.cpp.i
+.PHONY : Settings.i
+
+# target to preprocess a source file
+Settings.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Settings.cpp.i
+.PHONY : Settings.cpp.i
+
+Settings.s: Settings.cpp.s
+.PHONY : Settings.s
+
+# target to generate assembly for a file
+Settings.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Settings.cpp.s
+.PHONY : Settings.cpp.s
+
 Window.o: Window.cpp.o
 .PHONY : Window.o
 
@@ -200,6 +285,30 @@ Window.s: Window.cpp.s
 Window.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Window.cpp.s
 .PHONY : Window.cpp.s
+
+lkpacker.o: lkpacker.cpp.o
+.PHONY : lkpacker.o
+
+# target to build an object file
+lkpacker.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/lkpacker.cpp.o
+.PHONY : lkpacker.cpp.o
+
+lkpacker.i: lkpacker.cpp.i
+.PHONY : lkpacker.i
+
+# target to preprocess a source file
+lkpacker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/lkpacker.cpp.i
+.PHONY : lkpacker.cpp.i
+
+lkpacker.s: lkpacker.cpp.s
+.PHONY : lkpacker.s
+
+# target to generate assembly for a file
+lkpacker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/lkpacker.cpp.s
+.PHONY : lkpacker.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -225,6 +334,33 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+miniz.o: miniz.c.o
+.PHONY : miniz.o
+
+# target to build an object file
+miniz.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/miniz.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/miniz.c.o
+.PHONY : miniz.c.o
+
+miniz.i: miniz.c.i
+.PHONY : miniz.i
+
+# target to preprocess a source file
+miniz.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/miniz.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/miniz.c.i
+.PHONY : miniz.c.i
+
+miniz.s: miniz.c.s
+.PHONY : miniz.s
+
+# target to generate assembly for a file
+miniz.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/miniz.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/miniz.c.s
+.PHONY : miniz.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -233,19 +369,35 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... LKPacker"
 	@echo "... Lonkstalk"
 	@echo "... Beatmap.o"
 	@echo "... Beatmap.i"
 	@echo "... Beatmap.s"
+	@echo "... DebugOverlay.o"
+	@echo "... DebugOverlay.i"
+	@echo "... DebugOverlay.s"
 	@echo "... Game.o"
 	@echo "... Game.i"
 	@echo "... Game.s"
+	@echo "... ParticleSystem.o"
+	@echo "... ParticleSystem.i"
+	@echo "... ParticleSystem.s"
+	@echo "... Settings.o"
+	@echo "... Settings.i"
+	@echo "... Settings.s"
 	@echo "... Window.o"
 	@echo "... Window.i"
 	@echo "... Window.s"
+	@echo "... lkpacker.o"
+	@echo "... lkpacker.i"
+	@echo "... lkpacker.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... miniz.o"
+	@echo "... miniz.i"
+	@echo "... miniz.s"
 .PHONY : help
 
 

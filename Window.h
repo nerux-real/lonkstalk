@@ -5,7 +5,7 @@
 
 class Window {
 public:
-    bool init(const char *title, int width, int height);
+    bool init(const char *title, int width, int height, int fpsLock);
     void destroy();
 
     SDL_Window *getWindow() const;

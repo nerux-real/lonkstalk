@@ -64,6 +64,7 @@ CMAKE_BINARY_DIR = "/home/nerux/Рабочий стол/lonkstalk/build"
 
 # The main recursive "all" target.
 all: CMakeFiles/Lonkstalk.dir/all
+all: CMakeFiles/LKPacker.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -72,6 +73,7 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/Lonkstalk.dir/clean
+clean: CMakeFiles/LKPacker.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -81,12 +83,12 @@ clean: CMakeFiles/Lonkstalk.dir/clean
 CMakeFiles/Lonkstalk.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" --progress-num=1,2,3,4,5 "Built target Lonkstalk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" --progress-num=4,5,6,7,8,9,10,11,12 "Built target Lonkstalk"
 .PHONY : CMakeFiles/Lonkstalk.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Lonkstalk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" 5
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" 9
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Lonkstalk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" 0
 .PHONY : CMakeFiles/Lonkstalk.dir/rule
@@ -99,6 +101,32 @@ Lonkstalk: CMakeFiles/Lonkstalk.dir/rule
 CMakeFiles/Lonkstalk.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/clean
 .PHONY : CMakeFiles/Lonkstalk.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/LKPacker.dir
+
+# All Build rule for target.
+CMakeFiles/LKPacker.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" --progress-num=1,2,3 "Built target LKPacker"
+.PHONY : CMakeFiles/LKPacker.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/LKPacker.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/LKPacker.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles" 0
+.PHONY : CMakeFiles/LKPacker.dir/rule
+
+# Convenience name for target.
+LKPacker: CMakeFiles/LKPacker.dir/rule
+.PHONY : LKPacker
+
+# clean rule for target.
+CMakeFiles/LKPacker.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/clean
+.PHONY : CMakeFiles/LKPacker.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

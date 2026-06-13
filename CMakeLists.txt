@@ -7,6 +7,14 @@ add_executable(Lonkstalk
     Game.cpp
     Window.cpp
     Beatmap.cpp
+    DebugOverlay.cpp
+    miniz.c
+    ParticleSystem.cpp
+    Settings.cpp
+)
+add_executable(LKPacker
+    lkpacker.cpp
+    miniz.c
 )
 
 find_package(SDL2 REQUIRED)
@@ -16,3 +24,5 @@ find_package(SDL2_mixer REQUIRED)
 target_link_libraries(Lonkstalk PRIVATE SDL2_mixer)
 target_link_libraries(Lonkstalk PRIVATE SDL2_gfx)
 target_link_libraries(Lonkstalk PRIVATE SDL2_ttf)
+target_link_libraries(Lonkstalk PRIVATE SDL2_image)
+target_compile_features(LKPacker PRIVATE cxx_std_17)

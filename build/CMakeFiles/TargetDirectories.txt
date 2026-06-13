@@ -1,3 +1,4 @@
 /home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles/Lonkstalk.dir
+/home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles/LKPacker.dir
 /home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles/edit_cache.dir
 /home/nerux/Рабочий стол/lonkstalk/build/CMakeFiles/rebuild_cache.dir

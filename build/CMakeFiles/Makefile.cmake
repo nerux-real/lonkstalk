@@ -133,4 +133,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/Lonkstalk.dir/DependInfo.cmake"
+  "CMakeFiles/LKPacker.dir/DependInfo.cmake"
   )

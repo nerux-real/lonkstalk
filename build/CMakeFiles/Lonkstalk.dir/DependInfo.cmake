@@ -8,8 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/nerux/Рабочий стол/lonkstalk/miniz.c" "CMakeFiles/Lonkstalk.dir/miniz.c.o" "gcc" "CMakeFiles/Lonkstalk.dir/miniz.c.o.d"
   "/home/nerux/Рабочий стол/lonkstalk/Beatmap.cpp" "CMakeFiles/Lonkstalk.dir/Beatmap.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/Beatmap.cpp.o.d"
+  "/home/nerux/Рабочий стол/lonkstalk/DebugOverlay.cpp" "CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.o.d"
   "/home/nerux/Рабочий стол/lonkstalk/Game.cpp" "CMakeFiles/Lonkstalk.dir/Game.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/Game.cpp.o.d"
+  "/home/nerux/Рабочий стол/lonkstalk/ParticleSystem.cpp" "CMakeFiles/Lonkstalk.dir/ParticleSystem.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/ParticleSystem.cpp.o.d"
+  "/home/nerux/Рабочий стол/lonkstalk/Settings.cpp" "CMakeFiles/Lonkstalk.dir/Settings.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/Settings.cpp.o.d"
   "/home/nerux/Рабочий стол/lonkstalk/Window.cpp" "CMakeFiles/Lonkstalk.dir/Window.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/Window.cpp.o.d"
   "/home/nerux/Рабочий стол/lonkstalk/main.cpp" "CMakeFiles/Lonkstalk.dir/main.cpp.o" "gcc" "CMakeFiles/Lonkstalk.dir/main.cpp.o.d"
   )

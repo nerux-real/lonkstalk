@@ -4,3 +4,7 @@ constexpr int CELL_SIZE = 120;
 constexpr int APPROACH_SIZE = 80;
 constexpr float EXCELLENT_WINDOW_MS = 100.0f;
 constexpr float GOOD_WINDOW_MS = 250.0f;
+constexpr int PANEL_SPLIT = 600;
+constexpr int ENTRY_HEIGHT = 80;
+constexpr int DIFF_ENTRY_HEIGHT = 45;
+constexpr int LIST_START_Y = 100;
