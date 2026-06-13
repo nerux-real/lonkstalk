@@ -1,7 +1,6 @@
 {
   "name": "lonkstalk",
-  "version-string": "1.0",
-  "builtin-baseline": "6e1a2f4c8f0d9c2b9c3c7f2d3a1b5c9d0e1f2a3b",
+  "version-string": "1.0.0",
   "dependencies": [
     "sdl2",
     "sdl2-image",
