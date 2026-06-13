@@ -28,13 +28,7 @@ jobs:
 
     - name: Build
       run: |
-        cl /EHsc ^
-          /I SDL2-2.30.0/include ^
-          /I SDL2_mixer-2.8.0/include ^
-          *.cpp ^
-          SDL2-2.30.0/lib/x64/SDL2.lib ^
-          SDL2-2.30.0/lib/x64/SDL2main.lib ^
-          SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib
+        cl /EHsc /I SDL2-2.30.0/include /I SDL2_mixer-2.8.0/include *.cpp SDL2-2.30.0/lib/x64/SDL2.lib SDL2-2.30.0/lib/x64/SDL2main.lib SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib
 
     - name: Upload EXE
       uses: actions/upload-artifact@v4
