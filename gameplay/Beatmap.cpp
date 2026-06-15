@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include "miniz.h"
+#include "../deps/miniz.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;

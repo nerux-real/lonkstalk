@@ -1,12 +1,14 @@
-cp build-linux/scores.db scores.db
-cp build-linux/settings.ini settings.ini
+cp build-linux/scores.db gamestuff/scores.db
+cp build-linux/settings.ini gamestuff/settings.ini
 sudo rm -rf build-linux
 mkdir build-linux
-cp -r beatmaps build-linux/beatmaps
-cp -r skins build-linux/skins
-cp scores.db build-linux/scores.db
-cp settings.ini build-linux/settings.ini
+cp -r gamestuff/beatmaps build-linux/beatmaps
+cp -r gamestuff/skins build-linux/skins
+cp gamestuff/scores.db build-linux/scores.db
+cp gamestuff/settings.ini build-linux/settings.ini
 cd build-linux
 cmake ..
 make 
-./Lonkstalk
+if [[ " $* " == *" --run "* ]]; then
+	./Lonkstalk
+fi

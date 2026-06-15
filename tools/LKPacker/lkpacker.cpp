@@ -1,5 +1,5 @@
 #include <iostream>
-#include "miniz.h"
+#include "../../deps/miniz.h"
 #include <string>
 #include <filesystem>
 

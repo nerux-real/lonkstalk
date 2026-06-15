@@ -1,3 +1,6 @@
+some strange things with fullscreen and borderless
+add dynamic resolution change in game. recalculate everything, not hardcoded and unchangable
+
 3. Make map setting (approach rate, note size etc.)
 5. modern design (idk how)
 6.allow people change game layout
@@ -6,8 +9,6 @@
 9. LOCAL HISTORY (works, but add displaying in left panel)
 
 map should end after last note 5 seconds with fade out
-
-ADD NO FAIL PLZ
 
 PROBS BUG TEST!!!
 two sliders 1 start and goes

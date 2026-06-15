@@ -2,10 +2,11 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <string>
 
 class Window {
 public:
-    bool init(const char *title, int width, int height, int fpsLock);
+    bool init(const char *title, int width, int height, int fpsLock, std::string videoMode);
     void destroy();
 
     SDL_Window *getWindow() const;

@@ -19,6 +19,7 @@ public:
     void update(float deltaMs);
     void render(SDL_Renderer *renderer);
     void hook();
+    void unHook();
 protected:
     int overflow(int c) override;
 private:

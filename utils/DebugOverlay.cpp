@@ -50,3 +50,8 @@ void DebugOverlay::hook(){
     m_oldCout=std::cout.rdbuf(this);
     m_oldCerr=std::cerr.rdbuf(this);
 }
+
+void DebugOverlay::unHook(){
+    if(m_oldCout) std::cout.rdbuf(m_oldCout);
+    if(m_oldCerr) std::cerr.rdbuf(m_oldCerr);
+}

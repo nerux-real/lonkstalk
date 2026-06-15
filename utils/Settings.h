@@ -6,6 +6,7 @@ struct Settings {
     int offset=0;
     int resWidth=1920;
     int resHeight=1080;
+    std::string videoMode="windowed";
     int fpsLock=0;
     int bgAlpha=64;
     bool debug=true;

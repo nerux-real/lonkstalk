@@ -1,5 +1,5 @@
 #include "Hash.h"
-#include "picosha2.h"
+#include "../deps/picosha2.h"
 #include <fstream>
 
 std::string sha256File(const std::string& path){

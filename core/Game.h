@@ -2,22 +2,31 @@
 
 #include <SDL2/SDL.h>
 #include "Window.h"
-#include "Beatmap.h"
+#include "../gameplay/Beatmap.h"
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <unordered_map>
 #include <random>
-#include "DebugOverlay.h"
+#include "../utils/DebugOverlay.h"
 #include <filesystem>
 #include <vector>
-#include "ParticleSystem.h"
-#include "Settings.h"
-#include "Skins.h"
-// #include "DiscordRPC.h"
-#include "Hash.h"
-#include "Database.h"
+#include "../gameplay/ParticleSystem.h"
+#include "../utils/Settings.h"
+#include "../gameplay/Skins.h"
+// #include "../utils/DiscordRPC.h"
+#include "../utils/Hash.h"
+#include "../utils/Database.h"
 
 namespace fs = std::filesystem;
+
+struct Layout {
+    int cellSize;
+    int cols;
+    int rows;
+    int gridOffsetX;
+    int gridOffsetY;
+    int panelSplit;
+};
 
 struct SongEntry {
     std::string lkPath;
@@ -46,6 +55,7 @@ enum class GameState {
 class Game {
 public:
     bool init();
+    void computeLayout();
     void run();
     void shutdown();
     float getSongTimeMs();
@@ -68,6 +78,8 @@ public:
 
     void backToSongSelect();
 
+    void toggleDebug();
+
     std::string getGrade();
 
     void startGame(const std::string &path, const std::string &difficulty);
@@ -88,6 +100,7 @@ public:
     void scanBeatmaps();
 private:
     DebugOverlay m_debug;
+    Layout m_layout;
 
     bool m_loading=true;
     Window m_window;
@@ -173,4 +186,7 @@ private:
 
     SDL_Color m_bgDominantColor={255,255,255,255};
     SDL_Color m_bgDominantColorInverted={0,0,0,255};
+
+    //gamemodes
+    bool m_noFail=false;
 };

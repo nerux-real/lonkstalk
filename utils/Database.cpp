@@ -1,5 +1,6 @@
 #include "Database.h"
 #include <iostream>
+#include <unordered_set>
 
 bool Database::init(const std::string& path) {
     if (sqlite3_open(path.c_str(), &m_db) != SQLITE_OK) {
@@ -21,12 +22,12 @@ bool Database::init(const std::string& path) {
         "excellent_count INTEGER NOT NULL,"
         "good_count INTEGER NOT NULL,"
         "miss_count INTEGER NOT NULL,"
+        "no_fail INTEGER NOT NULL DEFAULT 0,"
         "timestamp INTEGER NOT NULL DEFAULT (strftime('%s','now'))"
         ");";
 
     char* errMsg = nullptr;
     int rc = sqlite3_exec(m_db, createTable, nullptr, nullptr, &errMsg);
-
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to create table (" << rc << "): "
                   << errMsg << "\n";
@@ -34,6 +35,52 @@ bool Database::init(const std::string& path) {
         sqlite3_close(m_db);
         m_db = nullptr;
         return false;
+    }
+
+    const std::vector<std::pair<std::string, std::string>> requiredColumns = {
+        { "lk_hash",        "TEXT NOT NULL DEFAULT ''" },
+        { "difficulty",     "TEXT NOT NULL DEFAULT ''" },
+        { "score",          "INTEGER NOT NULL DEFAULT 0" },
+        { "accuracy",       "REAL NOT NULL DEFAULT 0.0" },
+        { "max_combo",      "INTEGER NOT NULL DEFAULT 0" },
+        { "grade",          "TEXT NOT NULL DEFAULT ''" },
+        { "excellent_count","INTEGER NOT NULL DEFAULT 0" },
+        { "good_count",     "INTEGER NOT NULL DEFAULT 0" },
+        { "miss_count",     "INTEGER NOT NULL DEFAULT 0" },
+        { "no_fail",        "INTEGER NOT NULL DEFAULT 0" },
+        { "timestamp",      "INTEGER NOT NULL DEFAULT (strftime('%s','now'))" },
+    };
+
+    std::unordered_set<std::string> existingColumns;
+    {
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(m_db, "PRAGMA table_info(scores);",
+                               -1, &stmt, nullptr) == SQLITE_OK)
+        {
+            while (sqlite3_step(stmt) == SQLITE_ROW) {
+                const char* colName =
+                    reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+                if (colName) existingColumns.insert(colName);
+            }
+        }
+        sqlite3_finalize(stmt);
+    }
+
+    for (const auto& [colName, colDef] : requiredColumns) {
+        if (existingColumns.count(colName)) continue;
+
+        std::string alterSQL =
+            "ALTER TABLE scores ADD COLUMN " + colName + " " + colDef + ";";
+
+        if (sqlite3_exec(m_db, alterSQL.c_str(), nullptr, nullptr, &errMsg)
+            != SQLITE_OK)
+        {
+            std::cerr << "Failed to add column '" << colName << "': "
+                      << errMsg << "\n";
+            sqlite3_free(errMsg);
+        } else {
+            std::cout << "Schema migration: added column '" << colName << "'\n";
+        }
     }
 
     return true;
@@ -45,7 +92,7 @@ void Database::close(){
 }
 
 void Database::saveScore(const ScoreEntry &entry){
-    const char* insertSQL = "INSERT INTO scores (lk_hash, difficulty, score, accuracy, max_combo, grade, excellent_count, good_count, miss_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    const char* insertSQL = "INSERT INTO scores (lk_hash, difficulty, score, accuracy, max_combo, grade, excellent_count, good_count, miss_count, no_fail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     sqlite3_stmt* stmt;
     if(sqlite3_prepare_v2(m_db, insertSQL, -1, &stmt, nullptr) != SQLITE_OK){
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << "\n";
@@ -61,7 +108,8 @@ void Database::saveScore(const ScoreEntry &entry){
     sqlite3_bind_int(stmt, 7, entry.excellentCounts);
     sqlite3_bind_int(stmt, 8, entry.goodCounts);
     sqlite3_bind_int(stmt, 9, entry.missCounts);
-    //sqlite3_bind_int64(stmt, 10, entry.timestamp);
+    sqlite3_bind_int(stmt, 10, entry.noFail);
+    //sqlite3_bind_int64(stmt, 11, entry.timestamp);
 
     if(sqlite3_step(stmt) != SQLITE_DONE){
         std::cerr << "Failed to execute statement: " << sqlite3_errmsg(m_db) << "\n";
@@ -71,7 +119,7 @@ void Database::saveScore(const ScoreEntry &entry){
 }
 
 void Database::getScores(const std::string &lkHash, const std::string &difficulty, std::vector<ScoreEntry> &outScores){
-    const char* selectSQL = "SELECT lk_hash, difficulty, score, accuracy, max_combo, grade, excellent_count, good_count, miss_count, timestamp FROM scores WHERE lk_hash = ? AND difficulty = ? ORDER BY score DESC;";
+    const char* selectSQL = "SELECT lk_hash, difficulty, score, accuracy, max_combo, grade, excellent_count, good_count, miss_count, no_fail, timestamp FROM scores WHERE lk_hash = ? AND difficulty = ? ORDER BY score DESC;";
     sqlite3_stmt* stmt;
     if(sqlite3_prepare_v2(m_db, selectSQL, -1, &stmt, nullptr) != SQLITE_OK){
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(m_db) << "\n";
@@ -92,7 +140,8 @@ void Database::getScores(const std::string &lkHash, const std::string &difficult
         entry.excellentCounts = sqlite3_column_int(stmt, 6);
         entry.goodCounts = sqlite3_column_int(stmt, 7);
         entry.missCounts = sqlite3_column_int(stmt, 8);
-        entry.timestamp = static_cast<long>(sqlite3_column_int64(stmt, 9));
+        entry.noFail = sqlite3_column_int(stmt, 9);
+        entry.timestamp = static_cast<long>(sqlite3_column_int64(stmt, 10));
 
         outScores.push_back(entry);
     }

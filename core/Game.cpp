@@ -170,7 +170,7 @@ void Game::renderComboMilestone(){
     }
 }
 
-void Game::renderHpPulseEffect(){\
+void Game::renderHpPulseEffect(){
     SDL_Renderer* renderer = m_window.getRenderer();
     if(m_hp < 30.0f){
         float pulse = (std::sin(m_hpPulseTimer / 200.0f) + 1.0f) / 2.0f;
@@ -299,6 +299,15 @@ void Game::renderCanSkipIndicator(float songTime){
     }
 }
 
+void Game::computeLayout() {
+    int playAreW = (int)(m_settings.resWidth * 0.7f);
+    int playAreH = (int)(m_settings.resHeight * 0.85f);
+    m_layout.cellSize = std::min(playAreW / GRID_COLS, playAreH / GRID_ROWS);
+    m_layout.gridOffsetX = (m_settings.resWidth - m_layout.cellSize * GRID_COLS) / 2;
+    m_layout.gridOffsetY = (m_settings.resHeight - m_layout.cellSize * GRID_ROWS) / 2;
+    m_layout.panelSplit = m_settings.resWidth / 3;
+}
+
 bool Game::init(){
     m_settings.load("./settings.ini");
     m_loading=true;
@@ -314,11 +323,14 @@ bool Game::init(){
         std::cerr<<TTF_GetError()<<std::endl;
         return false;
     }
-    if(!m_window.init("Lonkstalk", m_settings.resWidth, m_settings.resHeight, m_settings.fpsLock)) return false;
+    if(!m_window.init("Lonkstalk", m_settings.resWidth, m_settings.resHeight, m_settings.fpsLock, m_settings.videoMode)) return false;
+    computeLayout();
     m_skins.scanSkins("./skins");
     m_skins.loadSkin(0, m_window.getRenderer()); //default pirmo
     m_debug.init(m_skins.getActive().m_fontUI, m_window.getRenderer());
-    m_debug.hook();
+    if(m_settings.debug){
+        m_debug.hook();
+    }
     m_database.init("./scores.db");
     //m_discordRPC.init("1515437675111387178");
     //m_discordRPC.update("In Menus", "Browsing songs");
@@ -520,6 +532,7 @@ void Game::renderCountdown(){
 
     //mapes info
     std::string name = m_beatmap.name + " [" + m_beatmap.difficulties[m_selectedDifficulty] + "]";
+    if(m_noFail) name+= " (No Fail)";
     drawCentered(name, m_skins.getActive().m_fontUI, {255,255,255,255});
     drawCentered("by " + m_beatmap.author, m_skins.getActive().s_fontUI, {180,180,180,255});
     if(!m_beatmap.song_original_name.empty())
@@ -756,7 +769,7 @@ void Game::updateGameplay(float deltaMs){
 
     m_hp-=HP_DRAIN_RATE*(deltaMs/1000.0f);
     if(m_hp < 0.0f) m_hp = 0.0f;
-    if(m_hp == 0.0f){
+    if(m_hp == 0.0f && !m_noFail){
         m_failed = true;
         m_saveScore = false;
         endMap();
@@ -788,8 +801,8 @@ void Game::updateGameplay(float deltaMs){
                 m_changed = true;
                 note.nextTickTime += tickInterval;
 
-                int px = note.gridCol*CELL_SIZE + CELL_SIZE/2;
-                int py = note.gridRow*CELL_SIZE + CELL_SIZE/2;
+                int px = m_layout.gridOffsetX + note.gridCol * m_layout.cellSize + m_layout.cellSize/2;
+                int py = m_layout.gridOffsetY + note.gridRow * m_layout.cellSize + m_layout.cellSize/2;
                 Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
                 m_particles.spawnParticles(px, py, note.r, note.g, note.b, 4);
             }
@@ -860,7 +873,9 @@ void Game::renderGameplay(){
             if(note.state == NoteState::Hit || note.state == NoteState::Missed){
                 if(note.fadeTimer <= 0) continue;
                 Uint8 fadeAlpha = (Uint8)((note.fadeTimer / 200.0f) * 255);
-                SDL_Rect rect = {note.gridCol*CELL_SIZE, note.gridRow*CELL_SIZE, CELL_SIZE, CELL_SIZE};
+                SDL_Rect rect = {m_layout.gridOffsetX + note.gridCol*m_layout.cellSize,
+                                m_layout.gridOffsetY + note.gridRow*m_layout.cellSize,
+                                m_layout.cellSize, m_layout.cellSize};
                 SDL_SetTextureColorMod(noteTex, 255, 255, 255);
                 SDL_SetTextureAlphaMod(noteTex, fadeAlpha);
                 SDL_RenderCopy(renderer, noteTex, nullptr, &rect);
@@ -869,18 +884,18 @@ void Game::renderGameplay(){
 
             if(songTime < note.timestampMs - APPROACH_TIME_MS) continue;
 
-            int x1 = note.gridCol    * CELL_SIZE + CELL_SIZE/2;
-            int y1 = note.gridRow    * CELL_SIZE + CELL_SIZE/2;
-            int x2 = note.endGridCol * CELL_SIZE + CELL_SIZE/2;
-            int y2 = note.endGridRow * CELL_SIZE + CELL_SIZE/2;
+            int x1 = m_layout.gridOffsetX + note.gridCol    * m_layout.cellSize + m_layout.cellSize/2;
+            int y1 = m_layout.gridOffsetY + note.gridRow    * m_layout.cellSize + m_layout.cellSize/2;
+            int x2 = m_layout.gridOffsetX + note.endGridCol * m_layout.cellSize + m_layout.cellSize/2;
+            int y2 = m_layout.gridOffsetY + note.endGridRow * m_layout.cellSize + m_layout.cellSize/2;
 
             if(note.state == NoteState::Holding){
                 SDL_SetRenderDrawColor(renderer, note.r, note.g, note.b, 255);
                 SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 
-                SDL_Rect endRect = {note.endGridCol*CELL_SIZE + CELL_SIZE/4,
-                                    note.endGridRow*CELL_SIZE + CELL_SIZE/4,
-                                    CELL_SIZE/2, CELL_SIZE/2};
+                SDL_Rect endRect = {m_layout.gridOffsetX + note.endGridCol * m_layout.cellSize + m_layout.cellSize/4,
+                                    m_layout.gridOffsetY + note.endGridRow * m_layout.cellSize + m_layout.cellSize/4,
+                                    m_layout.cellSize/2, m_layout.cellSize/2};
                 SDL_RenderFillRect(renderer, &endRect);
 
                 float duration = note.endTimestampMs - note.timestampMs;
@@ -888,30 +903,34 @@ void Game::renderGameplay(){
                 if(t < 0.0f) t = 0.0f;
                 if(t > 1.0f) t = 1.0f;
 
-                int px = note.gridCol*CELL_SIZE + (int)((note.endGridCol - note.gridCol)*CELL_SIZE*t);
-                int py = note.gridRow*CELL_SIZE + (int)((note.endGridRow - note.gridRow)*CELL_SIZE*t);
+                int px = m_layout.gridOffsetX + note.gridCol * m_layout.cellSize + (int)((note.endGridCol - note.gridCol) * m_layout.cellSize * t);
+                int py = m_layout.gridOffsetY + note.gridRow * m_layout.cellSize + (int)((note.endGridRow - note.gridRow) * m_layout.cellSize * t);
+
 
                 SDL_SetTextureColorMod(noteTex, 255, 255, 255);
                 SDL_SetTextureAlphaMod(noteTex, 255);
-                SDL_Rect indicator = {px + CELL_SIZE/4, py + CELL_SIZE/4, CELL_SIZE/2, CELL_SIZE/2};
+                SDL_Rect indicator = {px + m_layout.cellSize/4, py + m_layout.cellSize/4,
+                                    m_layout.cellSize/2, m_layout.cellSize/2};
                 SDL_RenderCopy(renderer, noteTex, nullptr, &indicator);
 
             } else {
                 SDL_SetRenderDrawColor(renderer, note.r, note.g, note.b, alpha);
                 SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 
-                SDL_Rect endRect = {note.endGridCol*CELL_SIZE + CELL_SIZE/4,
-                                    note.endGridRow*CELL_SIZE + CELL_SIZE/4,
-                                    CELL_SIZE/2, CELL_SIZE/2};
+                SDL_Rect endRect = {m_layout.gridOffsetX + note.endGridCol*m_layout.cellSize + m_layout.cellSize/4,
+                                    m_layout.gridOffsetY + note.endGridRow*m_layout.cellSize + m_layout.cellSize/4,
+                                    m_layout.cellSize/2, m_layout.cellSize/2};
                 SDL_RenderFillRect(renderer, &endRect);
 
-                SDL_Rect outerRect = {note.gridCol*CELL_SIZE - margin,
-                                      note.gridRow*CELL_SIZE - margin,
-                                      CELL_SIZE + margin*2, CELL_SIZE + margin*2};
+                SDL_Rect outerRect = {m_layout.gridOffsetX + note.gridCol*m_layout.cellSize - margin,
+                                    m_layout.gridOffsetY + note.gridRow*m_layout.cellSize - margin,
+                                    m_layout.cellSize + margin*2, m_layout.cellSize + margin*2};
                 SDL_SetRenderDrawColor(renderer, note.r, note.g, note.b, alpha);
                 SDL_RenderDrawRect(renderer, &outerRect);
 
-                SDL_Rect startRect = {note.gridCol*CELL_SIZE, note.gridRow*CELL_SIZE, CELL_SIZE, CELL_SIZE};
+                SDL_Rect startRect = {m_layout.gridOffsetX + note.gridCol*m_layout.cellSize,
+                                    m_layout.gridOffsetY + note.gridRow*m_layout.cellSize,
+                                    m_layout.cellSize, m_layout.cellSize};
                 SDL_SetTextureColorMod(noteTex, note.r, note.g, note.b);
                 SDL_SetTextureAlphaMod(noteTex, alpha);
                 SDL_RenderCopy(renderer, noteTex, nullptr, &startRect);
@@ -919,8 +938,8 @@ void Game::renderGameplay(){
                 SDL_Texture* texture = m_letterTextures[note.key];
                 int w, h;
                 SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-                SDL_Rect dst = {note.gridCol*CELL_SIZE + CELL_SIZE/2 - w/2,
-                                note.gridRow*CELL_SIZE + CELL_SIZE/2 - h/2, w, h};
+                SDL_Rect dst = {m_layout.gridOffsetX + note.gridCol*m_layout.cellSize + m_layout.cellSize/2 - w/2,
+                                m_layout.gridOffsetY + note.gridRow*m_layout.cellSize + m_layout.cellSize/2 - h/2, w, h};
                 SDL_RenderCopy(renderer, texture, nullptr, &dst);
             }
 
@@ -928,7 +947,9 @@ void Game::renderGameplay(){
             if(note.state == NoteState::Hit || note.state == NoteState::Missed){
                 if(note.fadeTimer <= 0) continue;
                 Uint8 fadeAlpha = (Uint8)((note.fadeTimer / 200.0f) * 255);
-                SDL_Rect rect = {note.gridCol*CELL_SIZE, note.gridRow*CELL_SIZE, CELL_SIZE, CELL_SIZE};
+                SDL_Rect rect = {m_layout.gridOffsetX + note.gridCol*m_layout.cellSize,
+                                m_layout.gridOffsetY + note.gridRow*m_layout.cellSize,
+                                m_layout.cellSize, m_layout.cellSize};
                 SDL_SetTextureColorMod(noteTex, 255, 255, 255);
                 SDL_SetTextureAlphaMod(noteTex, fadeAlpha);
                 SDL_RenderCopy(renderer, noteTex, nullptr, &rect);
@@ -936,14 +957,14 @@ void Game::renderGameplay(){
             }
 
             if(songTime >= note.timestampMs - APPROACH_TIME_MS){
-                int x = note.gridCol * CELL_SIZE;
-                int y = note.gridRow * CELL_SIZE;
+                int x = m_layout.gridOffsetX + note.gridCol * m_layout.cellSize;
+                int y = m_layout.gridOffsetY + note.gridRow * m_layout.cellSize;
 
-                SDL_Rect outerRect = {x-margin, y-margin, CELL_SIZE+margin*2, CELL_SIZE+margin*2};
+                SDL_Rect outerRect = {x-margin, y-margin, m_layout.cellSize+margin*2, m_layout.cellSize+margin*2};
                 SDL_SetRenderDrawColor(renderer, note.r, note.g, note.b, alpha);
                 SDL_RenderDrawRect(renderer, &outerRect);
 
-                SDL_Rect rect = {x, y, CELL_SIZE, CELL_SIZE};
+                SDL_Rect rect = {x, y, m_layout.cellSize, m_layout.cellSize};
                 SDL_SetTextureColorMod(noteTex, note.r, note.g, note.b);
                 SDL_SetTextureAlphaMod(noteTex, alpha);
                 SDL_RenderCopy(renderer, noteTex, nullptr, &rect);
@@ -951,7 +972,7 @@ void Game::renderGameplay(){
                 SDL_Texture* texture = m_letterTextures[note.key];
                 int w, h;
                 SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-                SDL_Rect dst = {x + CELL_SIZE/2 - w/2, y + CELL_SIZE/2 - h/2, w, h};
+                SDL_Rect dst = {x + m_layout.cellSize/2 - w/2, y + m_layout.cellSize/2 - h/2, w, h};
                 SDL_RenderCopy(renderer, texture, nullptr, &dst);
             }
         }
@@ -1025,6 +1046,7 @@ void Game::renderResults(){
     };
 
     std::string title = m_beatmap.name + " [" + m_songList[m_selectedSong].difficulties[m_selectedDifficulty] + "]";
+    if(m_noFail) title += " (No Fail)";
     if(m_failed) drawCentered(title + " - FAILED", m_skins.getActive().m_fontUI, {255,50,50,255});
     else drawCentered(title, m_skins.getActive().m_fontUI, {255,255,255,255});
 
@@ -1079,6 +1101,7 @@ void Game::endMap(){
         entry.excellentCounts = m_excellentHits;
         entry.goodCounts = m_goodHits;
         entry.missCounts = m_misses;
+        entry.noFail = m_noFail;
         m_database.saveScore(entry);
     }
 
@@ -1101,6 +1124,19 @@ void Game::run(){
             else if(m_event.type == SDL_KEYDOWN){
                 Uint64 now = SDL_GetPerformanceCounter();
                 m_inputLatency=(float)(now-frameStart)/SDL_GetPerformanceFrequency()*1000.0f;
+                if(m_event.key.keysym.sym == SDLK_F3) toggleDebug();
+                if (m_event.key.keysym.sym == SDLK_F11) {
+                    Uint32 flags = SDL_GetWindowFlags(m_window.getWindow());
+
+                    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+                        SDL_SetWindowFullscreen(m_window.getWindow(), 0);
+                    } else {
+                        SDL_SetWindowFullscreen(
+                            m_window.getWindow(),
+                            SDL_WINDOW_FULLSCREEN_DESKTOP
+                        );
+                    }
+                }
                 if(m_state == GameState::Gameplay)
                     if(m_event.key.keysym.sym == SDLK_ESCAPE) {m_saveScore=false; endMap();}
                     else if(m_event.key.keysym.sym == SDLK_SPACE && m_canSkip){
@@ -1109,8 +1145,15 @@ void Game::run(){
                         m_canSkip = false;
                     }
                     else handleInput(m_event.key.keysym.sym, m_visualTime);
-                else if(m_state == GameState::SongSelectMenu)
-                    handleSongSelectInput(m_event.key.keysym.sym);
+                else if(m_state == GameState::SongSelectMenu){
+                    if(m_event.key.keysym.sym == SDLK_ESCAPE) m_running=false;
+                    else if(m_event.key.keysym.sym == SDLK_SPACE){
+                        std::cout<<"No Fail: "<<(m_noFail ? "OFF" : "ON")<<std::endl;
+                        m_noFail = !m_noFail;
+                    } else {
+                        handleSongSelectInput(m_event.key.keysym.sym);
+                    }
+                }
                 else if(m_state == GameState::Results)
                     if(m_event.key.keysym.sym == SDLK_RETURN || m_event.key.keysym.sym == SDLK_KP_ENTER)
                         backToSongSelect();
@@ -1200,8 +1243,8 @@ void Game::handleInput(SDL_Keycode key, float songTime){
             note.nextTickTime = note.timestampMs + tickInterval;
             Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
             m_particles.spawnParticles(
-                note.gridCol * CELL_SIZE + CELL_SIZE/2,
-                note.gridRow * CELL_SIZE + CELL_SIZE/2,
+                m_layout.gridOffsetX + note.gridCol * m_layout.cellSize + m_layout.cellSize/2,
+                m_layout.gridOffsetY + note.gridRow * m_layout.cellSize + m_layout.cellSize/2,
                 note.r, note.g, note.b, 12);
             return;
         }
@@ -1224,8 +1267,8 @@ void Game::handleInput(SDL_Keycode key, float songTime){
     if(songTime < bestNote->timestampMs - APPROACH_TIME_MS) return;
     
     m_particles.spawnParticles(
-        bestNote->gridCol * CELL_SIZE + CELL_SIZE/2,
-        bestNote->gridRow * CELL_SIZE + CELL_SIZE/2,
+        m_layout.gridOffsetX + bestNote->gridCol * m_layout.cellSize + m_layout.cellSize/2,
+        m_layout.gridOffsetY + bestNote->gridRow * m_layout.cellSize + m_layout.cellSize/2,
         bestNote->r, bestNote->g, bestNote->b, 12);
 
     if(bestDiff <= EXCELLENT_WINDOW_MS){
@@ -1313,5 +1356,17 @@ void Game::handleKeyUp(SDL_Keycode key, float songTime){
         m_hitErrors.push_back({diff, 2000.0f, std::abs(diff) <= EXCELLENT_WINDOW_MS});
         m_changed = true;
         break;
+    }
+}
+
+void Game::toggleDebug(){
+    if(m_settings.debug){
+        m_settings.debug = false;
+        std::cout<<"Debug Mode OFF"<<std::endl;
+        m_debug.unHook();
+    } else {
+        m_settings.debug = true;
+        m_debug.hook();
+        std::cout<<"Debug Mode ON"<<std::endl;
     }
 }

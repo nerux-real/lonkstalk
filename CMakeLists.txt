@@ -6,24 +6,43 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(Lonkstalk
-    main.cpp
-    Game.cpp
-    Window.cpp
-    Beatmap.cpp
-    DebugOverlay.cpp
-    ParticleSystem.cpp
-    Settings.cpp
-    Skins.cpp
-    # DiscordRPC.cpp
-    miniz.c
-    sqlite3.c
-    Hash.cpp
-    Database.cpp
+    core/main.cpp
+    core/Game.cpp
+    core/Window.cpp
+    gameplay/Beatmap.cpp
+    gameplay/ParticleSystem.cpp
+    gameplay/Skins.cpp
+    deps/miniz.c
+    deps/sqlite3.c
+    # utils/DiscordRPC.cpp
+    utils/Hash.cpp
+    utils/Database.cpp
+    utils/DebugOverlay.cpp
+    utils/Settings.cpp
 )
 
 add_executable(LKPacker
-    lkpacker.cpp
-    miniz.c
+    tools/LKPacker/lkpacker.cpp
+    deps/miniz.c
+)
+
+add_executable(LKEditor
+    tools/LKEditor/lkeditor.cpp
+    tools/LKEditor/deps/imgui_demo.cpp
+    tools/LKEditor/deps/imgui_draw.cpp
+    tools/LKEditor/deps/imgui_tables.cpp
+    tools/LKEditor/deps/imgui_widgets.cpp
+    tools/LKEditor/deps/imgui.cpp
+    tools/LKEditor/deps/backends/imgui_impl_sdl2.cpp
+    tools/LKEditor/deps/backends/imgui_impl_sdlrenderer2.cpp
+)
+target_include_directories(LKEditor PRIVATE
+    tools/LKEditor/deps
+    tools/LKEditor/deps/backends
+)
+target_link_libraries(LKEditor PRIVATE
+    SDL2::SDL2
+    SDL2::SDL2main
 )
 
 find_package(SDL2 REQUIRED CONFIG)

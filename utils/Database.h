@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "sqlite3.h"
+#include "../deps/sqlite3.h"
 
 struct ScoreEntry {
     std::string lkHash;
@@ -13,6 +13,7 @@ struct ScoreEntry {
     int excellentCounts;
     int goodCounts;
     int missCounts;
+    bool noFail;
     long timestamp;
 };
 
