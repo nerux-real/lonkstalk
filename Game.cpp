@@ -354,6 +354,11 @@ void Game::scanBeatmaps(){
 
 void Game::startGame(const std::string &path, const std::string &difficulty){
     //m_beatmap.load(path.c_str()); legacy
+    if(m_music){
+        Mix_HaltMusic();
+        Mix_FreeMusic(m_music);
+        m_music = nullptr;
+    }
     m_visualTime=0.0f;    
     m_beatmap.loadMetaFromLk(path.c_str());
     m_beatmap.loadFromLk(path.c_str(), difficulty);
@@ -396,7 +401,6 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
         m_letterTextures[c]=SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
     }
-    if(m_music) Mix_FreeMusic(m_music);
     m_music=Mix_LoadMUS(m_beatmap.song_path.c_str());
     if(!m_music){
         std::cerr<<Mix_GetError()<<std::endl;
@@ -407,20 +411,23 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
     if(!m_beatmap.bg_path.empty()){
         if(m_bgTexture) SDL_DestroyTexture(m_bgTexture);
         SDL_Surface* bgSurface = IMG_Load(m_beatmap.bg_path.c_str());
-        Uint32 pixel = ((Uint32*)bgSurface->pixels)[0];
-        SDL_GetRGBA(pixel, bgSurface->format,
-                    &m_bgDominantColor.r,
-                    &m_bgDominantColor.g,
-                    &m_bgDominantColor.b,
-                    &m_bgDominantColor.a);
-        m_bgDominantColorInverted.r = 255 - m_bgDominantColor.r;
-        m_bgDominantColorInverted.g = 255 - m_bgDominantColor.g;
-        m_bgDominantColorInverted.b = 255 - m_bgDominantColor.b;
-        m_bgDominantColorInverted.a = 255;
-        m_bgTexture = SDL_CreateTextureFromSurface(m_window.getRenderer(), bgSurface);
-        SDL_SetTextureBlendMode(m_bgTexture, SDL_BLENDMODE_BLEND);
-        SDL_FreeSurface(bgSurface);
-        if(!bgSurface) std::cerr << "IMG_Load failed: " << IMG_GetError() << "\n";
+        if(!bgSurface){
+            std::cerr << "IMG_Load failed: " << IMG_GetError() << "\n";
+        } else {
+            Uint32 pixel = ((Uint32*)bgSurface->pixels)[0];
+            SDL_GetRGBA(pixel, bgSurface->format,
+                        &m_bgDominantColor.r,
+                        &m_bgDominantColor.g,
+                        &m_bgDominantColor.b,
+                        &m_bgDominantColor.a);
+            m_bgDominantColorInverted.r = 255 - m_bgDominantColor.r;
+            m_bgDominantColorInverted.g = 255 - m_bgDominantColor.g;
+            m_bgDominantColorInverted.b = 255 - m_bgDominantColor.b;
+            m_bgDominantColorInverted.a = 255;
+            m_bgTexture = SDL_CreateTextureFromSurface(m_window.getRenderer(), bgSurface);
+            SDL_SetTextureBlendMode(m_bgTexture, SDL_BLENDMODE_BLEND);
+            SDL_FreeSurface(bgSurface);
+        }
     }
 
     m_combo=0;

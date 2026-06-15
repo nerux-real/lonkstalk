@@ -85,6 +85,12 @@ void Beatmap::loadFromLk(const char *lkPath, const std::string &difficulty){
     }
     song_path="./tmp/beatmap.mp3";
     FILE *f=fopen(song_path.c_str(), "wb");
+    if(!f){
+        std::cerr << "Failed to open " << song_path << " for writing (file locked?)\n";
+        mz_free(songData);
+        mz_zip_reader_end(&zip);
+        return;
+    }
     fwrite(songData, 1, songSize, f);
     fclose(f);
     mz_free(songData);
