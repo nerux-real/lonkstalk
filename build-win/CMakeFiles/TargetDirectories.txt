@@ -1,4 +1,0 @@
-C:/Users/NERUX/Desktop/lonkstalk/build-win/CMakeFiles/Lonkstalk.dir
-C:/Users/NERUX/Desktop/lonkstalk/build-win/CMakeFiles/LKPacker.dir
-C:/Users/NERUX/Desktop/lonkstalk/build-win/CMakeFiles/edit_cache.dir
-C:/Users/NERUX/Desktop/lonkstalk/build-win/CMakeFiles/rebuild_cache.dir

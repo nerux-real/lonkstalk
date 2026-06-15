@@ -1,2 +1,0 @@
-Name: VLBeat (Default)
-Author: Nerux
