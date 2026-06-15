@@ -21,8 +21,8 @@ void Game::updateComboTexture() {
     if (m_comboTexture)
         SDL_DestroyTexture(m_comboTexture);
 
-    std::string comboStr = "Combo: " + std::to_string(m_combo) + "x";
-    SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().l_fontGame, comboStr.c_str(), {255,255,255,255});
+    std::string comboStr = std::to_string(m_combo) + "x";
+    SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().ll_fontGame, comboStr.c_str(), {255,255,255,255});
     m_comboTexture = SDL_CreateTextureFromSurface(m_window.getRenderer(), s);
     SDL_QueryTexture(m_comboTexture, nullptr, nullptr, &m_comboW, &m_comboH);
     SDL_FreeSurface(s);
@@ -32,8 +32,8 @@ void Game::updatePointsTexture() {
     if (m_scoreTexture)
         SDL_DestroyTexture(m_scoreTexture);
 
-    std::string scoreStr = "Score: " + std::to_string((int)m_displayPoints);
-    SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().l_fontGame, scoreStr.c_str(), {255,255,255,255});
+    std::string scoreStr = std::to_string((int)m_displayPoints);
+    SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().ll_fontGame, scoreStr.c_str(), {255,255,255,255});
     m_scoreTexture = SDL_CreateTextureFromSurface(m_window.getRenderer(), s);
     SDL_QueryTexture(m_scoreTexture, nullptr, nullptr, &m_scoreW, &m_scoreH);
     SDL_FreeSurface(s);
@@ -73,25 +73,33 @@ void Game::updateAccuracyTexture(){
     SDL_FreeSurface(s);
 }
 
-void Game::renderHPBar(){
+void Game::renderHPBar() {
     SDL_Renderer* renderer = m_window.getRenderer();
-    int barX = 20;
-    int barY = 20;
-    int barW = 300;
-    int barH = 20;
 
-    SDL_Rect barBg = {barX, barY, barW, barH};
+    int barW = 500;
+    int barH = 24;
+    int barX = m_settings.resWidth / 2 - barW / 2;
+    int barY = 20;
+
+    SDL_Rect barBg = { barX, barY, barW, barH };
     SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
     SDL_RenderFillRect(renderer, &barBg);
 
-    int fillW = (int)(m_hp / m_maxHp * barW);
-    Uint8 r = (Uint8)(255 * (1.0f - m_hp / m_maxHp));
-    Uint8 g = (Uint8)(255 * (m_hp / m_maxHp));
-    SDL_Rect barFill = {barX, barY, fillW, barH};
-    SDL_SetRenderDrawColor(renderer, r, g, 50, 255);
+    int fillW = static_cast<int>((m_hp / m_maxHp) * barW);
+
+    SDL_Rect barFill = { barX, barY, fillW, barH };
+    float hpPercent = m_hp / m_maxHp;
+
+    SDL_SetRenderDrawColor(
+        renderer,
+        static_cast<Uint8>(m_bgDominantColorInverted.r * hpPercent),
+        static_cast<Uint8>(m_bgDominantColorInverted.g * hpPercent),
+        static_cast<Uint8>(m_bgDominantColorInverted.b * hpPercent),
+        255
+    );
     SDL_RenderFillRect(renderer, &barFill);
 
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &barBg);
 }
 
@@ -155,7 +163,7 @@ void Game::renderComboMilestone(){
         SDL_QueryTexture(t2, nullptr, nullptr, &w, &h);
         int sw = (int)(w * scale);
         int sh = (int)(h * scale);
-        SDL_Rect dst = {m_settings.resWidth/2 - sw/2, m_settings.resHeight/2 - sh/2 - 80, sw, sh};
+        SDL_Rect dst = {m_settings.resWidth/2 - sw/2, 85, sw, sh};
         SDL_RenderCopy(renderer, t2, nullptr, &dst);
         SDL_FreeSurface(s);
         SDL_DestroyTexture(t2);
@@ -192,21 +200,82 @@ void Game::renderTimerDisplay(){
     char timerBuf[16];
     snprintf(timerBuf, sizeof(timerBuf), "%d:%02d", minutes, seconds);
 
-    SDL_Surface* ts = TTF_RenderText_Solid(m_skins.getActive().m_fontUI, timerBuf, {255,255,255,255});
+    char totalTimeBuf[16];
+    int totalMinutes = (int)(m_mapDuration / 1000.0f) / 60;
+    int totalSeconds = (int)(m_mapDuration / 1000.0f) % 60;
+    snprintf(totalTimeBuf, sizeof(totalTimeBuf), "%d:%02d", totalMinutes, totalSeconds);
+
+    std::string timerStr = std::string(timerBuf) + " / " + std::string(totalTimeBuf);
+    SDL_Surface* ts = TTF_RenderText_Solid(m_skins.getActive().m_fontUI, timerStr.c_str(), {255,255,255,255});
     SDL_Texture* tt = SDL_CreateTextureFromSurface(renderer, ts);
     int tw, th;
     SDL_QueryTexture(tt, nullptr, nullptr, &tw, &th);
-    SDL_Rect tdst = {m_settings.resWidth/2 - tw/2, 20, tw, th};
+    SDL_Rect tdst = {
+        m_settings.resWidth/2 - tw/2,
+        m_settings.resHeight - 40 - th - 10,
+        tw,
+        th
+    };
     SDL_RenderCopy(renderer, tt, nullptr, &tdst);
     SDL_FreeSurface(ts);
     SDL_DestroyTexture(tt);
+
+    // time progressbar on bottom
+    int barW = m_settings.resWidth - 40;
+    int barH = 10;
+    int barX = 20;
+    int barY = m_settings.resHeight - barH;
+
+    SDL_SetRenderDrawColor(renderer,
+        m_bgDominantColor.r,
+        m_bgDominantColor.g,
+        m_bgDominantColor.b,
+        255);
+
+    SDL_Rect bg = {barX, barY, barW, barH};
+    SDL_RenderFillRect(renderer, &bg);
+
+    float progress = m_visualTime / m_mapDuration;
+    progress = std::clamp(progress, 0.0f, 1.0f);
+
+    int fillW = (int)(barW * progress);
+
+    SDL_SetRenderDrawColor(renderer,
+        m_bgDominantColorInverted.r,
+        m_bgDominantColorInverted.g,
+        m_bgDominantColorInverted.b,
+        255);
+
+    SDL_Rect fill = {barX, barY, fillW, barH};
+    SDL_RenderFillRect(renderer, &fill);
+
+    SDL_RenderDrawLine(renderer,
+        barX, barY,
+        barX + barW, barY);
+
+    SDL_RenderDrawLine(renderer,
+        barX, barY + barH - 1,
+        barX + barW, barY + barH - 1);
 }
 
 void Game::renderFPSCounter(){
     SDL_Renderer* renderer = m_window.getRenderer();
     if(!m_skins.getActive().m_fontUI) return;
+
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%.2f ms", m_inputLatency);
+    std::string latencyStr = buf;
+    SDL_Surface* ls = TTF_RenderText_Solid(m_skins.getActive().s_fontUI, latencyStr.c_str(), {255,255,255,255});
+    SDL_Texture* lt = SDL_CreateTextureFromSurface(renderer, ls);
+    int lw, lh;
+    SDL_QueryTexture(lt, nullptr, nullptr, &lw, &lh);
+    SDL_Rect ldst = {m_settings.resWidth - lw - 20, m_settings.resHeight - lh - 50, lw, lh};
+    SDL_RenderCopy(renderer, lt, nullptr, &ldst);
+    SDL_FreeSurface(ls);
+    SDL_DestroyTexture(lt);
+
     std::string fpsStr = "FPS: " + std::to_string(m_fps);
-    SDL_Surface* fs = TTF_RenderText_Solid(m_skins.getActive().m_fontUI, fpsStr.c_str(), {100,255,100,255});
+    SDL_Surface* fs = TTF_RenderText_Solid(m_skins.getActive().s_fontUI, fpsStr.c_str(), {255,255,255,255});
     SDL_Texture* ft = SDL_CreateTextureFromSurface(renderer, fs);
     int fw, fh;
     SDL_QueryTexture(ft, nullptr, nullptr, &fw, &fh);
@@ -216,8 +285,22 @@ void Game::renderFPSCounter(){
     SDL_DestroyTexture(ft);
 }
 
+void Game::renderCanSkipIndicator(float songTime){
+    SDL_Renderer* renderer = m_window.getRenderer();
+    if(m_canSkip && songTime < m_skipTargetTime){
+        SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().s_fontUI, "Press SPACE to skip", {255,255,255,200});
+        SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
+        int w, h;
+        SDL_QueryTexture(t, nullptr, nullptr, &w, &h);
+        SDL_Rect dst = {m_settings.resWidth/2 - w/2, m_settings.resHeight - 120, w, h};
+        SDL_RenderCopy(renderer, t, nullptr, &dst);
+        SDL_FreeSurface(s);
+        SDL_DestroyTexture(t);
+    }
+}
+
 bool Game::init(){
-    m_settings.load("settings.ini");
+    m_settings.load("./settings.ini");
     m_loading=true;
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)!=0){
         std::cerr<<SDL_GetError()<<std::endl;
@@ -232,10 +315,11 @@ bool Game::init(){
         return false;
     }
     if(!m_window.init("Lonkstalk", m_settings.resWidth, m_settings.resHeight, m_settings.fpsLock)) return false;
-    m_skins.scanSkins("skins");
+    m_skins.scanSkins("./skins");
     m_skins.loadSkin(0, m_window.getRenderer()); //default pirmo
     m_debug.init(m_skins.getActive().m_fontUI, m_window.getRenderer());
     m_debug.hook();
+    m_database.init("./scores.db");
     //m_discordRPC.init("1515437675111387178");
     //m_discordRPC.update("In Menus", "Browsing songs");
     m_lastTick=SDL_GetPerformanceCounter();
@@ -273,6 +357,15 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
     m_visualTime=0.0f;    
     m_beatmap.loadMetaFromLk(path.c_str());
     m_beatmap.loadFromLk(path.c_str(), difficulty);
+
+    m_canSkip = false;
+    if(!m_beatmap.notes.empty()){
+        float firstNoteTime = m_beatmap.notes[0].timestampMs;
+        if(firstNoteTime > 5000.0f){
+            m_canSkip = true;
+            m_skipTargetTime = firstNoteTime - 3000.0f;
+        }
+    }
 
     m_mapDuration = 0.0f;
     for(auto& note : m_beatmap.notes){
@@ -314,6 +407,16 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
     if(!m_beatmap.bg_path.empty()){
         if(m_bgTexture) SDL_DestroyTexture(m_bgTexture);
         SDL_Surface* bgSurface = IMG_Load(m_beatmap.bg_path.c_str());
+        Uint32 pixel = ((Uint32*)bgSurface->pixels)[0];
+        SDL_GetRGBA(pixel, bgSurface->format,
+                    &m_bgDominantColor.r,
+                    &m_bgDominantColor.g,
+                    &m_bgDominantColor.b,
+                    &m_bgDominantColor.a);
+        m_bgDominantColorInverted.r = 255 - m_bgDominantColor.r;
+        m_bgDominantColorInverted.g = 255 - m_bgDominantColor.g;
+        m_bgDominantColorInverted.b = 255 - m_bgDominantColor.b;
+        m_bgDominantColorInverted.a = 255;
         m_bgTexture = SDL_CreateTextureFromSurface(m_window.getRenderer(), bgSurface);
         SDL_SetTextureBlendMode(m_bgTexture, SDL_BLENDMODE_BLEND);
         SDL_FreeSurface(bgSurface);
@@ -327,9 +430,13 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
     m_excellentHits=0;
     m_goodHits=0;
     m_misses=0;
+    m_hp=100.0f;
     m_hpPulseTimer = 0.0f;
     m_totalNotes = m_beatmap.notes.size();
+    m_countdownTotalTime=0.0f;
+    m_saveScore = true;
     m_changed = true;
+    m_failed = false;
     updateComboTexture();
     updatePointsTexture();
     updateAccuracyTexture();
@@ -342,6 +449,7 @@ void Game::startGame(const std::string &path, const std::string &difficulty){
 }
 
 void Game::updateCountdown(float deltaMs){
+    m_countdownTotalTime += deltaMs;
     m_countdownTimer -= deltaMs;
     if(m_countdownTimer <= 0){
         m_countdownValue--;
@@ -362,17 +470,71 @@ void Game::renderCountdown(){
     SDL_Rect overlay = {0, 0, m_settings.resWidth, m_settings.resHeight};
     SDL_RenderFillRect(renderer, &overlay);
 
-    std::string num = std::to_string(m_countdownValue);
-    SDL_Surface* s = TTF_RenderText_Solid(m_skins.getActive().l_fontGame, num.c_str(), {255,255,255,255});
-    SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
-    int w, h;
-    SDL_QueryTexture(t, nullptr, nullptr, &w, &h);
-    SDL_Rect dst = {960 - w/2, 540 - h/2, w, h};
-    SDL_RenderCopy(renderer, t, nullptr, &dst);
-    SDL_FreeSurface(s);
-    SDL_DestroyTexture(t);
+    int cx = m_settings.resWidth / 2;
+    int y = m_settings.resHeight / 2-250;
+
+    float totalDuration = 3000.0f;
+    float fadeTime = 300.0f;
+    float alpha = 255.0f;
+
+    if(m_countdownTotalTime < fadeTime){
+        alpha = (m_countdownTotalTime / fadeTime) * 255.0f;
+    } else if(m_countdownTotalTime > totalDuration - fadeTime){
+        alpha = ((totalDuration - m_countdownTotalTime) / fadeTime) * 255.0f;
+    }
+    if(alpha < 0) alpha = 0;
+    if(alpha > 255) alpha = 255;
+    Uint8 a = (Uint8)alpha;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, (Uint8)(128 * (a/255.0f)));
+    //map banneris
+    if(m_bgTexture){
+        int bannerW = 500;
+        int bannerH = 120;
+        SDL_SetTextureAlphaMod(m_bgTexture, a);
+        SDL_Rect bannerDst = {cx - bannerW/2, y, bannerW, bannerH};
+        SDL_RenderCopy(renderer, m_bgTexture, nullptr, &bannerDst);
+        y += bannerH + 10;
+    }
+
+    auto drawCentered = [&](const std::string& text, TTF_Font* font, SDL_Color color){
+        SDL_Surface* ts = TTF_RenderText_Solid(font, text.c_str(), color);
+        SDL_Texture* tt = SDL_CreateTextureFromSurface(renderer, ts);
+        SDL_SetTextureBlendMode(tt, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(tt, a);
+        int tw, th;
+        SDL_QueryTexture(tt, nullptr, nullptr, &tw, &th);
+        SDL_Rect tdst = {cx - tw/2, y, tw, th};
+        SDL_RenderCopy(renderer, tt, nullptr, &tdst);
+        SDL_FreeSurface(ts);
+        SDL_DestroyTexture(tt);
+        y += th + 8;
+    };
+
+    //mapes info
+    std::string name = m_beatmap.name + " [" + m_beatmap.difficulties[m_selectedDifficulty] + "]";
+    drawCentered(name, m_skins.getActive().m_fontUI, {255,255,255,255});
+    drawCentered("by " + m_beatmap.author, m_skins.getActive().s_fontUI, {180,180,180,255});
+    if(!m_beatmap.song_original_name.empty())
+        drawCentered(m_beatmap.song_original_name, m_skins.getActive().s_fontUI, {150,150,200,255});
+    //mapes garums
+    int totalSec = (int)(m_mapDuration / 1000.0f);
+    int mins = totalSec / 60;
+    int secs = totalSec % 60;
+    char lenBuf[16];
+    snprintf(lenBuf, sizeof(lenBuf), "%d:%02d", mins, secs);
+    drawCentered("Length: " + std::string(lenBuf), m_skins.getActive().s_fontUI, {180,180,180,255});
+
+    drawCentered("BPM: " + std::to_string(m_beatmap.bpm), m_skins.getActive().s_fontUI, {180,180,180,255});
+    drawCentered("Notes: " + std::to_string(m_beatmap.notes.size()), m_skins.getActive().s_fontUI, {180,180,180,255});
+    //mapes countdown
+    drawCentered(std::to_string(m_countdownValue), m_skins.getActive().l_fontGame, {255,255,255,255});
 
     renderHPBar();
+    renderHitErrorBar();
+    renderComboMilestone();
+    renderHpPulseEffect();
+    renderTimerDisplay();
 }
 
 void Game::updateSongSelectMenu(float deltaMs){
@@ -584,6 +746,8 @@ void Game::updateGameplay(float deltaMs){
     m_hp-=HP_DRAIN_RATE*(deltaMs/1000.0f);
     if(m_hp < 0.0f) m_hp = 0.0f;
     if(m_hp == 0.0f){
+        m_failed = true;
+        m_saveScore = false;
         endMap();
         return;
     }
@@ -604,7 +768,22 @@ void Game::updateGameplay(float deltaMs){
             note.fadeTimer -= deltaMs;
             continue;
         }
-        if(note.state == NoteState::Holding) continue;
+        if(note.state == NoteState::Holding){
+            float tickInterval = 60000.0f / m_beatmap.bpm;
+            while(songTime >= note.nextTickTime && note.nextTickTime < note.endTimestampMs){
+                m_combo++;
+                if(m_combo > m_maxCombo) m_maxCombo = m_combo;
+                m_points += (int)SLIDER_TICK_POINTS;
+                m_changed = true;
+                note.nextTickTime += tickInterval;
+
+                int px = note.gridCol*CELL_SIZE + CELL_SIZE/2;
+                int py = note.gridRow*CELL_SIZE + CELL_SIZE/2;
+                Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
+                m_particles.spawnParticles(px, py, note.r, note.g, note.b, 4);
+            }
+            continue;
+        }
 
         if(!note.hasColor){
             std::uniform_int_distribution<> dis(180, 255);
@@ -771,7 +950,7 @@ void Game::renderGameplay(){
 
     if(m_judgmentTimer > 0 && m_judgmentTexture){
         SDL_Rect dst = {m_settings.resWidth/2 - m_judgmentW/2,
-                        m_settings.resHeight/2 - m_judgmentH/2,
+                        45,
                         m_judgmentW, m_judgmentH};
         SDL_RenderCopy(renderer, m_judgmentTexture, nullptr, &dst);
     }
@@ -785,11 +964,32 @@ void Game::renderGameplay(){
     SDL_Rect accDst = {m_settings.resWidth - m_accuracyW - 20, 20 + m_scoreH + 5, m_accuracyW, m_accuracyH};
     SDL_RenderCopy(renderer, m_accuracyTexture, nullptr, &accDst);
 
+    std::string grade = getGrade();
+    SDL_Color gradeColor; 
+    if(grade == "SS") gradeColor = {255, 215, 0, 255}; 
+    else if(grade == "S") gradeColor = {255, 215, 0, 255}; 
+    else if(grade == "A") gradeColor = {50, 220, 50, 255}; 
+    else if(grade == "B") gradeColor = {50, 120, 255, 255}; 
+    else if(grade == "C") gradeColor = {255, 140, 0, 255}; 
+    else if(grade == "D") gradeColor = {180, 100, 255, 255}; 
+    else gradeColor = {255, 50, 50, 255}; 
+    SDL_Surface* gs = TTF_RenderText_Solid( m_skins.getActive().m_fontUI, grade.c_str(), {255,255,255,255} ); 
+    SDL_Texture* gt = SDL_CreateTextureFromSurface(renderer, gs); int gw, gh; 
+    SDL_QueryTexture(gt, nullptr, nullptr, &gw, &gh); const int padX = 14; const int padY = 5; 
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
+    SDL_SetRenderDrawColor( renderer, gradeColor.r, gradeColor.g, gradeColor.b, 204); 
+    SDL_Rect gradeBg = { accDst.x - gw - padX * 2 - 10, accDst.y - padY, gw + padX * 2, gh + padY * 2 }; 
+    SDL_RenderFillRect(renderer, &gradeBg); SDL_Rect gradeDst = { gradeBg.x + padX, gradeBg.y + padY, gw, gh }; 
+    SDL_RenderCopy(renderer, gt, nullptr, &gradeDst); 
+    SDL_FreeSurface(gs); 
+    SDL_DestroyTexture(gt);
+
     renderHPBar();
     renderHitErrorBar();
     renderComboMilestone();
     renderHpPulseEffect();
     renderTimerDisplay();
+    renderCanSkipIndicator(songTime);
 }
 
 void Game::updateResults(float deltaMs){
@@ -814,7 +1014,8 @@ void Game::renderResults(){
     };
 
     std::string title = m_beatmap.name + " [" + m_songList[m_selectedSong].difficulties[m_selectedDifficulty] + "]";
-    drawCentered(title, m_skins.getActive().m_fontUI, {255,255,255,255});
+    if(m_failed) drawCentered(title + " - FAILED", m_skins.getActive().m_fontUI, {255,50,50,255});
+    else drawCentered(title, m_skins.getActive().m_fontUI, {255,255,255,255});
 
     y += 20;
 
@@ -836,8 +1037,8 @@ void Game::renderResults(){
     y += 20;
 
     drawCentered("Excellent: " + std::to_string(m_excellentHits), m_skins.getActive().m_fontUI, {255,215,0,255});
-    drawCentered("Good: "      + std::to_string(m_goodHits),      m_skins.getActive().m_fontUI, {100,255,100,255});
-    drawCentered("Miss: "      + std::to_string(m_misses),        m_skins.getActive().m_fontUI, {255,50,50,255});
+    drawCentered("Good: " + std::to_string(m_goodHits),      m_skins.getActive().m_fontUI, {100,255,100,255});
+    drawCentered("Miss: " + std::to_string(m_misses),        m_skins.getActive().m_fontUI, {255,50,50,255});
 
     y += 30;
 
@@ -852,6 +1053,24 @@ void Game::endMap(){
     m_judgmentTimer = 0.0f;
     int accInt = (int)getAccuracy();
     std::string grade = getGrade();
+
+    // Save the score to the database
+    ScoreEntry entry;
+    entry.lkHash = sha256File(m_songList[m_selectedSong].lkPath);
+    std::cout<<"Hash: "<<entry.lkHash<<std::endl;
+    std::cout<<m_songList[m_selectedSong].lkPath<<std::endl;
+    if(m_saveScore){
+        entry.difficulty = m_songList[m_selectedSong].difficulties[m_selectedDifficulty];
+        entry.score = m_points;
+        entry.accuracy = getAccuracy();
+        entry.maxCombo = m_maxCombo;
+        entry.grade = grade;
+        entry.excellentCounts = m_excellentHits;
+        entry.goodCounts = m_goodHits;
+        entry.missCounts = m_misses;
+        m_database.saveScore(entry);
+    }
+
     // m_discordRPC.update(
     //     m_beatmap.name + " [" + m_songList[m_selectedSong].difficulties[m_selectedDifficulty] + "]",
     //     std::to_string(accInt) + "% - " + grade + " Grade"
@@ -865,11 +1084,19 @@ void Game::run(){
         Uint64 now = SDL_GetPerformanceCounter();
         float deltaMs = (float)(now-m_lastTick)/SDL_GetPerformanceFrequency()*1000.0f;
         m_lastTick=now;
+        Uint64 frameStart = SDL_GetPerformanceCounter();
         while(SDL_PollEvent(&m_event)){
             if(m_event.type==SDL_QUIT) m_running=false;
             else if(m_event.type == SDL_KEYDOWN){
+                Uint64 now = SDL_GetPerformanceCounter();
+                m_inputLatency=(float)(now-frameStart)/SDL_GetPerformanceFrequency()*1000.0f;
                 if(m_state == GameState::Gameplay)
-                    if(m_event.key.keysym.sym == SDLK_ESCAPE) endMap();
+                    if(m_event.key.keysym.sym == SDLK_ESCAPE) {m_saveScore=false; endMap();}
+                    else if(m_event.key.keysym.sym == SDLK_SPACE && m_canSkip){
+                        Mix_SetMusicPosition(m_skipTargetTime/1000.0f);
+                        m_visualTime = m_skipTargetTime;
+                        m_canSkip = false;
+                    }
                     else handleInput(m_event.key.keysym.sym, m_visualTime);
                 else if(m_state == GameState::SongSelectMenu)
                     handleSongSelectInput(m_event.key.keysym.sym);
@@ -877,6 +1104,8 @@ void Game::run(){
                     if(m_event.key.keysym.sym == SDLK_RETURN || m_event.key.keysym.sym == SDLK_KP_ENTER)
                         backToSongSelect();
             } else if(m_event.type==SDL_KEYUP){
+                Uint64 now = SDL_GetPerformanceCounter();
+                m_inputLatency=(float)(now-frameStart)/SDL_GetPerformanceFrequency()*1000.0f;
                 if(m_state == GameState::Gameplay) handleKeyUp(m_event.key.keysym.sym, m_visualTime);
             }
         }
@@ -929,6 +1158,7 @@ void Game::shutdown(){
     m_skins.getActive().unload();
     TTF_Quit();
     if(m_previewMusic) Mix_FreeMusic(m_previewMusic);
+    Mix_FreeChunk(m_skins.getActive().hitsound1);
     Mix_FreeMusic(m_music);
     Mix_CloseAudio();
     m_window.destroy();
@@ -955,6 +1185,9 @@ void Game::handleInput(SDL_Keycode key, float songTime){
         if(std::tolower(note.key) != k) continue;
         if(std::abs(adjustedTime - note.timestampMs) <= GOOD_WINDOW_MS){
             note.state = NoteState::Holding;
+            float tickInterval = 60000.0f / m_beatmap.bpm;
+            note.nextTickTime = note.timestampMs + tickInterval;
+            Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
             m_particles.spawnParticles(
                 note.gridCol * CELL_SIZE + CELL_SIZE/2,
                 note.gridRow * CELL_SIZE + CELL_SIZE/2,
@@ -978,13 +1211,14 @@ void Game::handleInput(SDL_Keycode key, float songTime){
     m_hitErrors.push_back({error, 2000.0f, bestDiff <= EXCELLENT_WINDOW_MS});
 
     if(songTime < bestNote->timestampMs - APPROACH_TIME_MS) return;
-
+    
     m_particles.spawnParticles(
         bestNote->gridCol * CELL_SIZE + CELL_SIZE/2,
         bestNote->gridRow * CELL_SIZE + CELL_SIZE/2,
         bestNote->r, bestNote->g, bestNote->b, 12);
 
     if(bestDiff <= EXCELLENT_WINDOW_MS){
+        Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
         m_judgmentText = "EXCELLENT";
         m_judgementColor = {255,215,0,255};
         m_combo++;
@@ -993,6 +1227,7 @@ void Game::handleInput(SDL_Keycode key, float songTime){
         m_hp=std::min(m_maxHp, m_hp+HP_EXCELLENT_ADD);
         m_points += 300 * m_combo;
     } else if(bestDiff <= GOOD_WINDOW_MS){
+        Mix_PlayChannel(-1, m_skins.getActive().hitsound1, 0);
         m_judgmentText = "GOOD";
         m_judgementColor = {0,128,0,255};
         m_combo++;
@@ -1001,6 +1236,7 @@ void Game::handleInput(SDL_Keycode key, float songTime){
         m_hp=std::min(m_maxHp, m_hp+HP_GOOD_ADD);
         m_points += 100 * m_combo;
     } else {
+        //miss sound here??
         m_judgmentText = "MISS";
         m_judgementColor = {255,0,0,255};
         m_combo = 0;
@@ -1024,30 +1260,38 @@ void Game::handleKeyUp(SDL_Keycode key, float songTime){
         if(note.state != NoteState::Holding) continue;
         if((char)key != std::tolower(note.key)) continue;
 
-        float diff = std::abs(adjustedTime - note.endTimestampMs);
-        if(diff <= EXCELLENT_WINDOW_MS){
+        float diff = adjustedTime - note.endTimestampMs;
+
+        if(diff < -EARLY_RELEASE_THRESHOLD_MS){
+            m_judgmentText = "MISS";
+            m_judgementColor = {255,0,0,255};
+            m_combo = 0;
+            m_misses++;
+            m_hp = std::max(0.0f, m_hp - HP_MISS_SUB);
+        } else if(std::abs(diff) <= EXCELLENT_WINDOW_MS){
             m_judgmentText = "EXCELLENT";
             m_judgementColor = {255,215,0,255};
             m_combo++;
-            if(m_combo>m_maxCombo) m_maxCombo = m_combo;
+            if(m_combo > m_maxCombo) m_maxCombo = m_combo;
             m_excellentHits++;
-            m_hp=std::min(m_maxHp, m_hp+HP_EXCELLENT_ADD);
+            m_hp = std::min(m_maxHp, m_hp + HP_EXCELLENT_ADD);
             m_points += 300 * m_combo;
-        } else if(diff <= GOOD_WINDOW_MS){
+        } else if(std::abs(diff) <= GOOD_WINDOW_MS){
             m_judgmentText = "GOOD";
             m_judgementColor = {0,128,0,255};
             m_combo++;
+            if(m_combo > m_maxCombo) m_maxCombo = m_combo;
             m_goodHits++;
-            m_hp=std::min(m_maxHp, m_hp+HP_GOOD_ADD);
+            m_hp = std::min(m_maxHp, m_hp + HP_GOOD_ADD);
             m_points += 100 * m_combo;
         } else {
             m_judgmentText = "MISS";
             m_judgementColor = {255,0,0,255};
             m_combo = 0;
-            if(m_combo>m_maxCombo) m_maxCombo = m_combo;
             m_misses++;
-            m_hp=std::max(0.0f, m_hp-HP_MISS_SUB);
+            m_hp = std::max(0.0f, m_hp - HP_MISS_SUB);
         }
+
         if(m_combo == 50 || m_combo == 100 || m_combo == 200 || m_combo % 100 == 0){
             m_milestoneTimer = 800.0f;
             m_milestoneCombo = m_combo;
@@ -1055,8 +1299,7 @@ void Game::handleKeyUp(SDL_Keycode key, float songTime){
         note.state = NoteState::Hit;
         note.fadeTimer = 200.0f;
         m_judgmentTimer = 800.0f;
-        float error = adjustedTime - note.endTimestampMs;
-        m_hitErrors.push_back({error, 2000.0f, diff <= EXCELLENT_WINDOW_MS});
+        m_hitErrors.push_back({diff, 2000.0f, std::abs(diff) <= EXCELLENT_WINDOW_MS});
         m_changed = true;
         break;
     }

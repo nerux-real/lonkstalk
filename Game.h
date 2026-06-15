@@ -14,6 +14,8 @@
 #include "Settings.h"
 #include "Skins.h"
 #include "DiscordRPC.h"
+#include "Hash.h"
+#include "Database.h"
 
 namespace fs = std::filesystem;
 
@@ -62,6 +64,7 @@ public:
     void renderHpPulseEffect();
     void renderTimerDisplay();
     void renderFPSCounter();
+    void renderCanSkipIndicator(float songTime);
 
     void backToSongSelect();
 
@@ -113,11 +116,13 @@ private:
     int m_milestoneCombo=0;
     float m_hpPulseTimer=0.0f;
     float m_mapDuration=0.0f;
+    float m_countdownTotalTime=0.0f;
     std::unordered_map<char, SDL_Texture*> m_letterTextures;
 
     float m_fpsTimer=0.0f;
     int m_fps=0;
     int m_fpsCount=0;
+    float m_inputLatency=0.0f;
 
     SDL_Texture* m_judgmentTexture = nullptr;
     SDL_Texture* m_comboTexture = nullptr;
@@ -136,6 +141,7 @@ private:
     float m_hp=100.0f;
     float m_maxHp=100.0f;
     bool m_changed = false;
+    bool m_failed=false;
 
     int m_minColor=0;
     int m_maxColor=255;
@@ -158,4 +164,13 @@ private:
 
     SDL_Texture* m_menuBgTexture = nullptr;
     int m_lastBgSong = -1;
+
+    bool m_canSkip=false;
+    float m_skipTargetTime=0.0f;
+
+    Database m_database;
+    bool m_saveScore=true;
+
+    SDL_Color m_bgDominantColor={255,255,255,255};
+    SDL_Color m_bgDominantColorInverted={0,0,0,255};
 };

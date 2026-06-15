@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <vector>
+#include <SDL2/SDL_mixer.h>
 
 struct Skin {
     std::string name;
@@ -10,12 +11,14 @@ struct Skin {
     std::string path;
 
     SDL_Texture* noteTexture  = nullptr;
+    TTF_Font* ll_fontGame = nullptr;
     TTF_Font* l_fontGame = nullptr;
     TTF_Font* m_fontGame = nullptr;
     TTF_Font* s_fontGame = nullptr;
     TTF_Font* l_fontUI = nullptr;
     TTF_Font* m_fontUI = nullptr;
     TTF_Font* s_fontUI = nullptr;
+    Mix_Chunk* hitsound1 = nullptr;
 
     void load(SDL_Renderer* renderer);
     void unload();

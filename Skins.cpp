@@ -59,6 +59,7 @@ void Skins::loadSkin(int index, SDL_Renderer* renderer){
         std::cerr << "IMG_Load failed: " << IMG_GetError() << "\n";
     }
 
+    skin.ll_fontGame = TTF_OpenFont((skin.path + "/gameinterface.ttf").c_str(), 64);
     skin.l_fontGame = TTF_OpenFont((skin.path + "/gameinterface.ttf").c_str(), 48);
     skin.m_fontGame = TTF_OpenFont((skin.path + "/gameinterface.ttf").c_str(), 32);
     skin.s_fontGame = TTF_OpenFont((skin.path + "/gameinterface.ttf").c_str(), 24);
@@ -66,8 +67,11 @@ void Skins::loadSkin(int index, SDL_Renderer* renderer){
     skin.m_fontUI   = TTF_OpenFont((skin.path + "/uiinterface.ttf").c_str(), 32);
     skin.s_fontUI   = TTF_OpenFont((skin.path + "/uiinterface.ttf").c_str(), 24);
 
+    skin.hitsound1 = Mix_LoadWAV((skin.path + "/hitsound1.wav").c_str());
+
     if(!skin.l_fontGame) std::cerr << "Could not load gameinterface.ttf\n";
     if(!skin.l_fontUI)   std::cerr << "Could not load uiinterface.ttf\n";
+    if(!skin.hitsound1)  std::cerr << "Could not load hitsound1.wav\n";
 
     m_activeSkin = index;
     std::cout << "Loaded skin: " << skin.name << "\n";

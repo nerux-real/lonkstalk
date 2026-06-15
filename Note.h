@@ -25,6 +25,7 @@ struct Note {
     int endGridRow;
     NoteState state = NoteState::Waiting;
     float fadeTimer=0.0f;
+    float nextTickTime=0.0f;
 
     Uint8 r, g, b;
     bool hasColor=false;

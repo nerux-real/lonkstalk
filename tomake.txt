@@ -1,3 +1,15 @@
-1.Slider system(add on tick add combo)
-2. Make map setting (approach rate, note size etc.)
-3. Add ability to skip song intro till first note - some seconds
+3. Make map setting (approach rate, note size etc.)
+5. modern design (idk how)
+6.allow people change game layout
+8. editor for making maps (probably additional program like LKPacker LKEditor)
+
+9. LOCAL HISTORY (works, but add displaying in left panel)
+
+map should end after last note 5 seconds with fade out
+
+ADD NO FAIL PLZ
+
+PROBS BUG TEST!!!
+two sliders 1 start and goes
+while first goes, second start and also goes, hold 2 buttons.
+how will react?

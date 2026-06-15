@@ -166,6 +166,30 @@ Beatmap.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Beatmap.cpp.s
 .PHONY : Beatmap.cpp.s
 
+Database.o: Database.cpp.o
+.PHONY : Database.o
+
+# target to build an object file
+Database.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Database.cpp.o
+.PHONY : Database.cpp.o
+
+Database.i: Database.cpp.i
+.PHONY : Database.i
+
+# target to preprocess a source file
+Database.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Database.cpp.i
+.PHONY : Database.cpp.i
+
+Database.s: Database.cpp.s
+.PHONY : Database.s
+
+# target to generate assembly for a file
+Database.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Database.cpp.s
+.PHONY : Database.cpp.s
+
 DebugOverlay.o: DebugOverlay.cpp.o
 .PHONY : DebugOverlay.o
 
@@ -190,30 +214,6 @@ DebugOverlay.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DebugOverlay.cpp.s
 .PHONY : DebugOverlay.cpp.s
 
-DiscordRPC.o: DiscordRPC.cpp.o
-.PHONY : DiscordRPC.o
-
-# target to build an object file
-DiscordRPC.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DiscordRPC.cpp.o
-.PHONY : DiscordRPC.cpp.o
-
-DiscordRPC.i: DiscordRPC.cpp.i
-.PHONY : DiscordRPC.i
-
-# target to preprocess a source file
-DiscordRPC.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DiscordRPC.cpp.i
-.PHONY : DiscordRPC.cpp.i
-
-DiscordRPC.s: DiscordRPC.cpp.s
-.PHONY : DiscordRPC.s
-
-# target to generate assembly for a file
-DiscordRPC.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/DiscordRPC.cpp.s
-.PHONY : DiscordRPC.cpp.s
-
 Game.o: Game.cpp.o
 .PHONY : Game.o
 
@@ -237,6 +237,30 @@ Game.s: Game.cpp.s
 Game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Game.cpp.s
 .PHONY : Game.cpp.s
+
+Hash.o: Hash.cpp.o
+.PHONY : Hash.o
+
+# target to build an object file
+Hash.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Hash.cpp.o
+.PHONY : Hash.cpp.o
+
+Hash.i: Hash.cpp.i
+.PHONY : Hash.i
+
+# target to preprocess a source file
+Hash.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Hash.cpp.i
+.PHONY : Hash.cpp.i
+
+Hash.s: Hash.cpp.s
+.PHONY : Hash.s
+
+# target to generate assembly for a file
+Hash.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/Hash.cpp.s
+.PHONY : Hash.cpp.s
 
 ParticleSystem.o: ParticleSystem.cpp.o
 .PHONY : ParticleSystem.o
@@ -409,6 +433,30 @@ miniz.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LKPacker.dir/build.make CMakeFiles/LKPacker.dir/miniz.c.s
 .PHONY : miniz.c.s
 
+sqlite3.o: sqlite3.c.o
+.PHONY : sqlite3.o
+
+# target to build an object file
+sqlite3.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/sqlite3.c.o
+.PHONY : sqlite3.c.o
+
+sqlite3.i: sqlite3.c.i
+.PHONY : sqlite3.i
+
+# target to preprocess a source file
+sqlite3.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/sqlite3.c.i
+.PHONY : sqlite3.c.i
+
+sqlite3.s: sqlite3.c.s
+.PHONY : sqlite3.s
+
+# target to generate assembly for a file
+sqlite3.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Lonkstalk.dir/build.make CMakeFiles/Lonkstalk.dir/sqlite3.c.s
+.PHONY : sqlite3.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -422,15 +470,18 @@ help:
 	@echo "... Beatmap.o"
 	@echo "... Beatmap.i"
 	@echo "... Beatmap.s"
+	@echo "... Database.o"
+	@echo "... Database.i"
+	@echo "... Database.s"
 	@echo "... DebugOverlay.o"
 	@echo "... DebugOverlay.i"
 	@echo "... DebugOverlay.s"
-	@echo "... DiscordRPC.o"
-	@echo "... DiscordRPC.i"
-	@echo "... DiscordRPC.s"
 	@echo "... Game.o"
 	@echo "... Game.i"
 	@echo "... Game.s"
+	@echo "... Hash.o"
+	@echo "... Hash.i"
+	@echo "... Hash.s"
 	@echo "... ParticleSystem.o"
 	@echo "... ParticleSystem.i"
 	@echo "... ParticleSystem.s"
@@ -452,6 +503,9 @@ help:
 	@echo "... miniz.o"
 	@echo "... miniz.i"
 	@echo "... miniz.s"
+	@echo "... sqlite3.o"
+	@echo "... sqlite3.i"
+	@echo "... sqlite3.s"
 .PHONY : help
 
 

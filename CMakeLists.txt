@@ -16,6 +16,9 @@ add_executable(Lonkstalk
     Skins.cpp
     # DiscordRPC.cpp
     miniz.c
+    sqlite3.c
+    Hash.cpp
+    Database.cpp
 )
 
 add_executable(LKPacker
@@ -36,19 +39,21 @@ target_link_libraries(Lonkstalk PRIVATE
     SDL2_image::SDL2_image
     SDL2_mixer::SDL2_mixer
     SDL2_ttf::SDL2_ttf
+    pthread
+    dl
 )
 
 if(TARGET SDL2_gfx::SDL2_gfx)
     target_link_libraries(Lonkstalk PRIVATE SDL2_gfx::SDL2_gfx)
 endif()
 
-find_library(DISCORD_RPC_LIB
-    NAMES discord-rpc
-)
+# find_library(DISCORD_RPC_LIB
+#     NAMES discord-rpc
+# )
 
-if(DISCORD_RPC_LIB)
-    target_link_libraries(Lonkstalk PRIVATE ${DISCORD_RPC_LIB})
-endif()
+# if(DISCORD_RPC_LIB)
+#     target_link_libraries(Lonkstalk PRIVATE ${DISCORD_RPC_LIB})
+# endif()
 
 target_compile_features(LKPacker PRIVATE cxx_std_17)
 

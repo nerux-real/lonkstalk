@@ -13,3 +13,6 @@ constexpr float HP_DRAIN_RATE = 2.0f;
 constexpr float HP_EXCELLENT_ADD = 10.0f;
 constexpr float HP_GOOD_ADD = 5.0f;
 constexpr float HP_MISS_SUB = 15.0f;
+
+constexpr float SLIDER_TICK_POINTS=50.0f;
+constexpr float EARLY_RELEASE_THRESHOLD_MS=100.0f;
