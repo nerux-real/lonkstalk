@@ -5,7 +5,7 @@ project(VLBeats VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(VLBeats MACOSX_BUNDLE
+add_executable(VLBeats
     core/main.cpp
     core/Game.cpp
     core/Window.cpp
@@ -75,7 +75,7 @@ endif()
 
 if(UNIX AND NOT APPLE)
     install(FILES lonkstalk.desktop DESTINATION share/applications)
-    install(FILES icon.png DESTINATION share/icons/hicolor/128x128/apps)
+    install(FILES app_icon.png DESTINATION share/icons/hicolor/128x128/apps)
 endif()
 
 if(TARGET SDL2_gfx::SDL2_gfx)
@@ -87,6 +87,6 @@ target_compile_features(LKPacker PRIVATE cxx_std_17)
 if(WIN32)
     target_compile_definitions(VLBeats PRIVATE _CRT_SECURE_NO_WARNINGS)
     set(APP_ICON_RESOURCE "${CMAKE_BINARY_DIR}/app_icon.rc")
-    file(WRITE ${APP_ICON_RESOURCE} "IDI_ICON1 ICON \"${CMAKE_SOURCE_DIR}/icon.ico\"")
+    file(WRITE ${APP_ICON_RESOURCE} "IDI_ICON1 ICON \"${CMAKE_SOURCE_DIR}/app_icon.ico\"")
     target_sources(VLBeats PRIVATE ${APP_ICON_RESOURCE})
 endif()
